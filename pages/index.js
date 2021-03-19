@@ -1,8 +1,13 @@
 import Head from 'next/head';
 import Image from 'next/image';
+
+import renderToString from 'next-mdx-remote/render-to-string'
+import hydrate from 'next-mdx-remote/hydrate'
+
 import styles from '../styles/Home.module.css';
 
-export default function Home() {
+export default function Home({ source }) {
+  const content = hydrate(source)
   return (
     <div className={styles.container}>
       <Head>
@@ -12,7 +17,7 @@ export default function Home() {
 
       <main className={styles.main}>
         <h1 className={styles.title}>Next Image on Netlify</h1>
-
+        <div className="wrapper">{content}</div>
         <p>
           <Image
             src="/jason-rogers.jpg"
@@ -25,4 +30,10 @@ export default function Home() {
       </main>
     </div>
   );
+}
+export async function getStaticProps() {
+  // MDX text - can be from a local file, database, anywhere
+  const source = 'Some **mdx** text, with a component'
+  const mdxSource = await renderToString(source)
+  return { props: { source: mdxSource } }
 }
